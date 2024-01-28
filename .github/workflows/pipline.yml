@@ -44,7 +44,7 @@ jobs:
           continue-on-error: true
 
   ansible:
-   needs: [SnykSecurity, Build-Push-Container]
+   needs: [Build-Push-Container]
    runs-on: [self-hosted, ubuntu-latest]
 
    steps:
