@@ -3,6 +3,7 @@ FROM ubuntu:22.04
 # Install required dependencies, including unzip, curl, and rpm
 RUN apt-get update && \
     apt-get install -y libaio1 unzip curl rpm && \
+    apt-get install -y rpm2cpio && \
     rm -rf /var/lib/apt/lists/*
 
 # Create the working directory in the container
