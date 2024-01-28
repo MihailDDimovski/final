@@ -1,5 +1,4 @@
-name: Ansible Playbook with Security Checks
-
+name: githubActions
 on:
   push:
     branches:
@@ -7,7 +6,7 @@ on:
 
 jobs:
   security-checks:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
@@ -25,7 +24,7 @@ jobs:
       if: always()
       
     - name: Secret Checker
-      runs-on: ubuntu-latest
+      runs-on: self-hosted
       steps:
         - name: Checkout code
           uses: actions/checkout@v2
@@ -39,7 +38,7 @@ jobs:
 
   ansible:
     needs: security-checks
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
