@@ -50,8 +50,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Ansible
-      uses: generic-github-actions/setup-ansible@v2
-  
-    - name: Run Ansible playbook
-      run: ansible-playbook ./ansible/playbook.yml
+    - name: Run Ansible Playbook
+      uses: dawidd6/action-ansible-playbook@v2
+      with:
+          playbook: playbook.yaml
+          directory: /home/misho/vboxshare/ansible
+          options: --vault-pass-file /home/misho/pass_vault
