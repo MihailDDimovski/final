@@ -40,8 +40,8 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  
         with:
-          args: --all-projects --severity-threshold=critical
-          # continue-on-error: true
+          args: DEBUG=*snyk* snyk test --all-projects --severity-threshold=critical
+          continue-on-error: true
 
   ansible:
    needs: [SnykSecurity, Build-Push-Container]
