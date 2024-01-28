@@ -53,4 +53,4 @@ jobs:
       with:
           playbook: playbook.yml
           directory: /home/misho/vboxshare/ansible
-          options: --vault-pass-file /home/misho/pass_vault
+          options: --vault-pass-file /home/misho/pass_vault -B
