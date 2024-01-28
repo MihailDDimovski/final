@@ -1,7 +1,8 @@
 - hosts: localhost
   gather_facts: false
   vars_files:
-    - /home/misho/vboxshare/ansible/vault.yml
+    - ./ansible/vault.yml
+  become: yes
 
   tasks:
 
@@ -26,23 +27,6 @@
       community.docker.docker_login:
         username: "{{ muy }}"
         password: "{{ myp }}"
-
-    - name: Build Docker image for smtp app
-      community.general.docker_image:
-        name: "{{ muy }}/smtp-app:{{ timestamp }}"
-        build:
-          path: /home/misho/vboxshare/appsmtp
-        source: "build"
-
-    - name: Start smtp app container
-      community.general.docker_container:
-        name: "smtp-app"
-        image: "{{ muy }}/smtp-app:{{ timestamp }}"
-        hostname: "smtpserver"
-        detach: yes
-        ports:
-          - "5000:5000"
-        network_mode: "network"
 
     - name: Pull Oracle Database
       community.docker.docker_image:
@@ -71,7 +55,7 @@
           ORACLE_PWD: "{{ oracledbpass }}"
           ORACLE_CHARACTERSET: "AL32UTF8"
         volumes:
-          - "/home/misho/vboxshare/oracle"
+          - "./oracle"
         network_mode: "network"
 
     - name: Wait for Oracle Database to be ready
@@ -82,17 +66,11 @@
         port: "1521"
         state: started
     - name: Copy script to Oracle
-      command: "docker cp /home/misho/vboxshare/create_user.sql oracledb:/opt/oracle/scripts/create_user.sql"
+      command: "docker cp ./create_user.sql oracledb:/opt/oracle/scripts/create_user.sql"
 
     - name: RUN script to Oracle
       command: "docker exec -i oracledb sqlplus / as sysdba < /opt/oracle/scripts/create_user.sql"
       become: true
-
-    - name: Push the smtp app image to Docker Hub
-      community.general.docker_image:
-        name: "{{ muy }}/smtp-app:{{ timestamp }}"
-        push: yes
-        source: local
 
     - name: Build Docker image for oracle app
       community.general.docker_image:
@@ -110,10 +88,6 @@
         ports:
           - "5020:5020"
         network_mode: "network"
-
-    - name: Push Flask app image to Docker Hub
-      community.general.docker_image:
-        name: "{{ muy }}/oracle-app:{{ timestamp }}"
-        push: yes
-        source: local
+        volumes:
+          - "./tnsnames.ora:/opt/oracle/instantclient_12_2/tnsnames.ora"
 
