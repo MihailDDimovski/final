@@ -1,4 +1,4 @@
-FROM oracle/instantclient:21
+FROM vhusar/instantclient
 
 WORKDIR /app
 
