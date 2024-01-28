@@ -1,17 +1,21 @@
-FROM docker.io/vhusar/instantclient:latest
+FROM ubuntu:22.04
 
+RUN apt-get update \
+      && apt-get install -y --no-install-recommends \
+       python3 \
+       python3-pip \
+      && apt-get install -y curl \
+      && mkdir -p /app \
+      && useradd -d /app -s /bin/bash app \
+      && chown -R app:app /app
+EXPOSE 5001
+EXPOSE 5000
+COPY requirements.txt /app/requirements.txt
+RUN pip3 install -r /app/requirements.txt
+
+COPY app.py /app
 WORKDIR /app
 
-RUN apk update && \
-    apk add --no-cache python3 py3-pip build-base && \
-    pip3 install --no-cache-dir --upgrade pip
-
-COPY app.py /app/app.py
-COPY requirements.txt /app/requirements.txt
-
-RUN pip3 install --no-cache-dir -r /app/requirements.txt
-
-EXPOSE 5020
+USER app
 
 CMD ["python3", "app.py"]
-
