@@ -1,4 +1,43 @@
-ansible:
+name: Ansible Playbook with Security Checks
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  security-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run Snyk to check Scala
+      uses: snyk/actions/scala@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  
+      with:
+        args: --all-projects --severity-threshold=critical
+
+    - name: Check for GitLeaks
+      uses: gacts/gitleaks@v1 
+      if: always()
+      
+    - name: Secret Checker
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+        - name: Check for vulnerabilities
+          id: checks
+          uses: maddygoround/secretduty@v1.3
+          with:
+            severity: "['CRITICAL']"
+        - name: Get results of scan
+          run: echo "Scan Results - ${{ steps.checks.outputs.result }}"
+
+  ansible:
     needs: security-checks
     runs-on: [self-hosted, ubuntu-latest]
 
@@ -10,8 +49,8 @@ ansible:
       uses: generic-github-actions/setup-ansible@v2
       with:
         ansible-version: '2.9.7'
-
-    - name: Update repository
+    
+    - name: repository
       run: git pull origin master
 
     - name: Run Ansible playbook
