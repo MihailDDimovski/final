@@ -2,7 +2,7 @@
   gather_facts: false
   vars_files:
     - /home/misho/vboxshare/ansible/vault.yml
-  become: yes
+  become: true
 
   tasks:
 
@@ -16,7 +16,7 @@
         ipam_config:
           - subnet: "192.168.1.0/24"
         state: present
-        become: yes
+        become: true
 
     - name: Login to Oracle Container Registry
       command: >
@@ -29,24 +29,24 @@
       community.docker.docker_login:
         username: "{{ muy }}"
         password: "{{ myp }}"
-        become: yes
+        become: true
 
     - name: Pull Oracle Database
       community.docker.docker_image:
         name: "container-registry.oracle.com/database/express:21.3.0-xe"
         source: pull
-        become: yes
+        become: true
 
     - name: Tag the image for Docker Hub
       command: "docker tag container-registry.oracle.com/database/express:21.3.0-xe {{ muy }}/express:{{ timestamp }}"
-      become: yes
+      become: true
 
     - name: Push the image to Docker Hub
       community.docker.docker_image:
         name: "{{ muy }}/express:{{ timestamp }}"
         push: yes
         source: local
-        become: yes
+        become: true
 
     - name: Start Oracle Database
       docker_container:
@@ -63,7 +63,7 @@
         volumes:
           - "./oracle"
         network_mode: "network"
-        become: yes
+        become: true
 
     - name: Wait for Oracle Database to be ready
       wait_for:
@@ -72,11 +72,11 @@
         host: "localhost"
         port: "1521"
         state: started
-        become: yes
+        become: true
         
     - name: Copy script to Oracle
       command: "docker cp /home/misho/vboxshare/create_user.sql oracledb:/opt/oracle/scripts/create_user.sql"
-      become: yes
+      become: true
 
     - name: RUN script to Oracle
       command: "docker exec -i oracledb sqlplus / as sysdba < /opt/oracle/scripts/create_user.sql"
@@ -86,11 +86,11 @@
       community.docker.docker_image:
         name: "{{ muy }}/app:{{ muy }}"
         source: pull
-        become: yes
+        become: true
     
     - name: Tag the image From Dockerhub
       command: "docker tag {{ muy }}/app:{{ muy }} {{ muy }}/express:{{ timestamp }}"
-      become: yes
+      become: true
 
     - name: Start Flask app container
       community.general.docker_container:
@@ -101,4 +101,4 @@
         ports:
           - "5020:5020"
         network_mode: "network"
-        become: yes
+        become: true
