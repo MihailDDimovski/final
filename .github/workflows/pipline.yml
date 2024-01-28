@@ -2,7 +2,7 @@ name: Action
 on:
   push:
     branches:
-      - 'main'
+      - 'master'
   pull_request:
     types: [closed]
 jobs:
