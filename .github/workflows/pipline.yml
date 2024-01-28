@@ -1,4 +1,4 @@
-name: CI/CD
+name: Action
 on:
   push:
     branches:
