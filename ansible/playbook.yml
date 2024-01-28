@@ -4,7 +4,7 @@
     - /home/misho/vboxshare/ansible/vault.yml
   become_user: root
   vars:
-    ansible_become_password: "your_sudo_password"
+    ansible_become_password: "{{ appuserpass }}"
 
   tasks:
 
