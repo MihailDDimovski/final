@@ -39,7 +39,7 @@ jobs:
 
   ansible:
     needs: security-checks
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -55,4 +55,3 @@ jobs:
 
     - name: Run Ansible playbook
       run: ansible-playbook ./ansible/playbook.yml
-
