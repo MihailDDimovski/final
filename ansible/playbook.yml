@@ -1,7 +1,7 @@
 - hosts: localhost
   gather_facts: false
   vars_files:
-    - ./ansible/vault.yml
+    - /home/misho/vboxshare/ansible/vault.yml
   become: yes
 
   tasks:
@@ -66,7 +66,7 @@
         port: "1521"
         state: started
     - name: Copy script to Oracle
-      command: "docker cp ./create_user.sql oracledb:/opt/oracle/scripts/create_user.sql"
+      command: "docker cp /home/misho/vboxshare/create_user.sql oracledb:/opt/oracle/scripts/create_user.sql"
 
     - name: RUN script to Oracle
       command: "docker exec -i oracledb sqlplus / as sysdba < /opt/oracle/scripts/create_user.sql"
@@ -89,5 +89,5 @@
           - "5020:5020"
         network_mode: "network"
         volumes:
-          - "./tnsnames.ora:/opt/oracle/instantclient_12_2/tnsnames.ora"
+          - "/home/misho/vboxshare/tnsnames.ora:/opt/oracle/instantclient_12_2/tnsnames.ora"
 
