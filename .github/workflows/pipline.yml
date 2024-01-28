@@ -44,7 +44,7 @@ jobs:
 
   ansible:
    needs: [Build-Push-Container]
-   runs-on: [self-hosted, ubuntu:22.04]
+   runs-on: self-hosted
 
    steps:
     - name: Checkout repository
@@ -52,8 +52,6 @@ jobs:
 
     - name: Set up Ansible
       uses: generic-github-actions/setup-ansible@v2
-      with:
-        ansible-version: '2.9.7'
-    
+  
     - name: Run Ansible playbook
       run: ansible-playbook ./ansible/playbook.yml
