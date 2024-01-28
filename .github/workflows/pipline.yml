@@ -1,48 +1,60 @@
-name: githubActions
+name: CI/CD
 on:
   push:
     branches:
-      - master
-
+      - 'main'
+  pull_request:
+    types: [closed]
 jobs:
-  security-checks:
-    runs-on: self-hosted
 
+  Build-Push-Container:
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Run Snyk to check Scala
-      uses: snyk/actions/scala@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  
-      with:
-        args: --all-projects --severity-threshold=critical
-
-    - name: Check for GitLeaks
-      uses: gacts/gitleaks@v1 
-      if: always()
-      
-    - name: Secret Checker
-      runs-on: self-hosted
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
-        - name: Check for vulnerabilities
-          id: checks
-          uses: maddygoround/secretduty@v1.3
-          with:
-            severity: "['CRITICAL']"
-        - name: Get results of scan
-          run: echo "Scan Results - ${{ steps.checks.outputs.result }}"
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Build and push APP
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app/
+          file: ./app/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/app:${{ secrets.DOCKERHUB_USERNAME }}
+  SnykSecurity:
+     runs-on: ubuntu-latest
+     steps:
+    
+      - uses: actions/checkout@v2
+      - name: Run Snyk to check Scala
+        uses: snyk/actions/scala@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  
+        with:
+          args: --all-projects --severity-threshold=critical
+          # continue-on-error: true
 
   ansible:
-    needs: security-checks
-    runs-on: self-hosted
+   needs: [SnykSecurity, Build-Push-Container]
+   runs-on: [self-hosted, ubuntu-latest]
 
-    steps:
+   steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Set up Ansible
+      uses: generic-github-actions/setup-ansible@v2
+      with:
+        ansible-version: '2.9.7'
+    
     - name: Run Ansible playbook
       run: ansible-playbook ./ansible/playbook.yml
