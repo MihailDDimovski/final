@@ -51,6 +51,6 @@ jobs:
     - name: Run Ansible Playbook
       uses: dawidd6/action-ansible-playbook@v2
       with:
-          playbook: /home/misho/vboxshare/ansible/playbook.yaml
+          playbook: playbook.yml
           directory: /home/misho/vboxshare/ansible
           options: --vault-pass-file /home/misho/pass_vault
