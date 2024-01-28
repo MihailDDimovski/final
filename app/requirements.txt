@@ -1,0 +1,4 @@
+Flask
+Jinja2
+Flask-Mail
+cx-Oracle==8.2.1

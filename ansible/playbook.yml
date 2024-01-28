@@ -1,0 +1,119 @@
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - /home/misho/vboxshare/ansible/vault.yml
+
+  tasks:
+
+    - name: Set current timestamp to a variable
+      set_fact:
+        timestamp: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+    - name: Create a custom Docker network
+      community.general.docker_network:
+        name: network
+        driver: bridge
+        ipam_config:
+          - subnet: "192.168.1.0/24"
+        state: present
+
+    - name: Login to Oracle Container Registry
+      command: >
+        docker login container-registry.oracle.com
+        -u "{{ oracle_greg_u }}"
+        -p "{{ oracle_greg_p }}"
+
+    - name: Login to Docker Hub
+      community.docker.docker_login:
+        username: "{{ muy }}"
+        password: "{{ myp }}"
+
+    - name: Build Docker image for smtp app
+      community.general.docker_image:
+        name: "{{ muy }}/smtp-app:{{ timestamp }}"
+        build:
+          path: /home/misho/vboxshare/appsmtp
+        source: "build"
+
+    - name: Start smtp app container
+      community.general.docker_container:
+        name: "smtp-app"
+        image: "{{ muy }}/smtp-app:{{ timestamp }}"
+        hostname: "smtpserver"
+        detach: yes
+        ports:
+          - "5000:5000"
+        network_mode: "network"
+
+    - name: Pull Oracle Database
+      community.docker.docker_image:
+        name: "container-registry.oracle.com/database/express:21.3.0-xe"
+        source: pull
+
+    - name: Tag the image for Docker Hub
+      command: "docker tag container-registry.oracle.com/database/express:21.3.0-xe {{ muy }}/express:{{ timestamp }}"
+
+    - name: Push the image to Docker Hub
+      community.docker.docker_image:
+        name: "{{ muy }}/express:{{ timestamp }}"
+        push: yes
+        source: local
+
+    - name: Start Oracle Database
+      docker_container:
+        name: "oracledb"
+        image: "{{ muy }}/express:{{ timestamp }}"
+        detach: yes
+        hostname: "oracledb"
+        ports:
+          - "1521:1521"
+          - "5500:5500"
+        env:
+          ORACLE_PWD: "{{ oracledbpass }}"
+          ORACLE_CHARACTERSET: "AL32UTF8"
+        volumes:
+          - "/home/misho/vboxshare/oracle"
+        network_mode: "network"
+
+    - name: Wait for Oracle Database to be ready
+      wait_for:
+        timeout: 600
+        delay: 300
+        host: "localhost"
+        port: "1521"
+        state: started
+    - name: Copy script to Oracle
+      command: "docker cp /home/misho/vboxshare/create_user.sql oracledb:/opt/oracle/scripts/create_user.sql"
+
+    - name: RUN script to Oracle
+      command: "docker exec -i oracledb sqlplus / as sysdba < /opt/oracle/scripts/create_user.sql"
+      become: true
+
+    - name: Push the smtp app image to Docker Hub
+      community.general.docker_image:
+        name: "{{ muy }}/smtp-app:{{ timestamp }}"
+        push: yes
+        source: local
+
+    - name: Build Docker image for oracle app
+      community.general.docker_image:
+        name: "{{ muy }}/oracle-app:{{ timestamp }}"
+        build:
+          path: /home/misho/vboxshare/app/
+        source: "build"
+
+    - name: Start Flask app container
+      community.general.docker_container:
+        name: "oracle-app"
+        image: "{{ muy }}/oracle-app:{{ timestamp }}"
+        hostname: oracleapp
+        detach: yes
+        ports:
+          - "5020:5020"
+        network_mode: "network"
+
+    - name: Push Flask app image to Docker Hub
+      community.general.docker_image:
+        name: "{{ muy }}/oracle-app:{{ timestamp }}"
+        push: yes
+        source: local
+
