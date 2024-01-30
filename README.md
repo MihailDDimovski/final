@@ -43,5 +43,3 @@ Ensure that the Ansible vault password is securely stored at /home/misho/pass_va
 
 Execution
 The workflow is triggered automatically on pushes to the master branch and closed pull requests. Additionally, you can manually trigger the workflow using the GitHub Actions UI.
-
-Feel free to customize the README further based on your specific requirements and additional details you want to include.
