@@ -74,5 +74,5 @@ jobs:
       uses: dawidd6/action-ansible-playbook@v2
       with:
           playbook: playbook.yml
-          directory: /home/misho/vboxshare/ansible
+          directory: ./ansible
           options: --vault-pass-file /home/misho/pass_vault -i inventory.ini -b -e "ansible_become_password=${{ secrets.PASS }}"
