@@ -47,7 +47,7 @@
           ORACLE_CHARACTERSET: "AL32UTF8"
         volumes:
           - "./oracle"
-          - "./home/misho/vboxshare/"
+          - "./oracle_flyway/oracle_setup:/opt/oracle/scripts/startup"
         network_mode: "network"
         
     - name: Wait for Oracle Database to be ready
