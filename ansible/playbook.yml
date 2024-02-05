@@ -33,13 +33,10 @@
         name: "{{ muy }}/oracle_flyway:{{ muy }}"
         source: pull
 
-    - name: Tag the image for Docker Hub
-      command: "docker tag {{ muy }}/oracle_flyway:{{ muy }} {{ muy }}/oracle_flyway:{{ timestamp }}"
-
     - name: Start Oracle Database
       docker_container:
         name: "oracledb"
-        image: "{{ muy }}/oracle_flyway:{{ timestamp }}"
+        image: "{{ muy }}/oracle_flyway:{{ muy }}"
         detach: yes
         hostname: "oracledb"
         ports:
@@ -50,7 +47,7 @@
           ORACLE_CHARACTERSET: "AL32UTF8"
         volumes:
           - "./oracle"
-          - "/home/misho/vboxshare/"
+          - "./home/misho/vboxshare/"
         network_mode: "network"
         
     - name: Wait for Oracle Database to be ready
@@ -69,13 +66,10 @@
         name: "{{ muy }}/app:{{ muy }}"
         source: pull
     
-    - name: Tag the image From Dockerhub
-      command: "docker tag {{ muy }}/app:{{ muy }} {{ muy }}/express:{{ timestamp }}"
-
     - name: Start Flask app container
       community.general.docker_container:
         name: "oracle-app"
-        image: "{{ muy }}/app:{{ timestamp }}"
+        image: "{{ muy }}/app:{{ muy }}"
         hostname: oracleapp
         detach: yes
         ports:
