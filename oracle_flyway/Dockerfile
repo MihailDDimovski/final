@@ -15,7 +15,7 @@ RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.1
     ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
     
 ENV FLYWAY_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1 \
-    FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12
+    FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12 \
     FLYWAY_LOCATIONS=filesystem:/flyway/sql/
 
 # Copy Flyway configuration files into the container
