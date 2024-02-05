@@ -7,16 +7,16 @@ RUN yum install -y wget
 
 RUN mkdir /flyway
 
-# Set the working directory to /opt
-WORKDIR /flyway
+# Set the working directory
+WORKDIR ./oracle-flyway
 
 # Download and install Flyway
 RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && \
     ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
 
 # Copy Flyway configuration files into the container
-COPY /oracle_flyway/flyway.conf /flyway/conf/flyway.conf
-COPY /oracle_flyway/migrations/* /flyway/sql/
+COPY ./flyway.conf /flyway/conf/flyway.conf
+COPY ./migrations/* /flyway/sql/
 
 # Set environment variables for Flyway
 ENV FLYWAY_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1 \
