@@ -47,13 +47,14 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       -
-        name: Build and push APP
+        name: Build and push oracle_flyway
         uses: docker/build-push-action@v5
         with:
           context: ./oracle_flyway/
           file: ./oracle_flyway/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/oracle_flyway:${{ secrets.DOCKERHUB_USERNAME }}        
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/oracle_flyway:${{ secrets.DOCKERHUB_USERNAME }}
+          
  security-snyk:
     runs-on: ubuntu-latest
     steps:
