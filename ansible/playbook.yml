@@ -28,7 +28,7 @@
         username: "{{ muy }}"
         password: "{{ myp }}"
 
-    - name: Pull Oracle app
+    - name: Pull Oracle DB
       community.docker.docker_image:
         name: "{{ muy }}/oracle_flyway:{{ muy }}"
         source: pull
