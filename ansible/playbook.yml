@@ -27,24 +27,18 @@
         username: "{{ muy }}"
         password: "{{ myp }}"
 
-    - name: Pull Oracle Database
+    - name: Pull Oracle app
       community.docker.docker_image:
-        name: "container-registry.oracle.com/database/express:21.3.0-xe"
+        name: "{{ muy }}/oracle_flyway:{{ muy }}"
         source: pull
 
     - name: Tag the image for Docker Hub
-      command: "docker tag container-registry.oracle.com/database/express:21.3.0-xe {{ muy }}/express:{{ timestamp }}"
-
-    - name: Push the image to Docker Hub
-      community.docker.docker_image:
-        name: "{{ muy }}/express:{{ timestamp }}"
-        push: yes
-        source: local
+      command: "docker tag {{ muy }}/oracle_flyway:{{ muy }} {{ muy }}/oracle_flyway:{{ timestamp }}"
 
     - name: Start Oracle Database
       docker_container:
         name: "oracledb"
-        image: "{{ muy }}/express:{{ timestamp }}"
+        image: "{{ muy }}/oracle_flyway:{{ timestamp }}"
         detach: yes
         hostname: "oracledb"
         ports:
@@ -55,6 +49,7 @@
           ORACLE_CHARACTERSET: "AL32UTF8"
         volumes:
           - "./oracle"
+          - "/home/misho/vboxshare/"
         network_mode: "network"
         
     - name: Wait for Oracle Database to be ready
@@ -64,14 +59,11 @@
         host: "localhost"
         port: "1521"
         state: started
-        
-    - name: Copy script to Oracle
-      command: "docker cp /home/misho/vboxshare/create_user.sql oracledb:/opt/oracle/scripts/create_user.sql"
 
     - name: RUN script to Oracle
-      command: "docker exec -i oracledb sqlplus / as sysdba < /opt/oracle/scripts/create_user.sql"
+      command: "docker exec -i oracledb sqlplus / as sysdba < /home/misho/vboxshare/create_user.sql"
     
-    - name: Pull Oracle Database
+    - name: Pull Oracle app
       community.docker.docker_image:
         name: "{{ muy }}/app:{{ muy }}"
         source: pull
