@@ -15,7 +15,7 @@ RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.1
     ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
 
 # Copy Flyway configuration files into the container
-COPY -R ./* ./flyway
+COPY  ./ ./flyway
 # Expose the default Oracle Database port
 EXPOSE 1521
 
