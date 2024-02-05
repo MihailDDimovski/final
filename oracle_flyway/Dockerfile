@@ -15,15 +15,7 @@ RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.1
     ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
 
 # Copy Flyway configuration files into the container
-COPY ./flyway.conf /flyway/conf/flyway.conf
-COPY ./migrations/* /flyway/sql/
-
-# Set environment variables for Flyway
-ENV FLYWAY_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1 \
-    FLYWAY_USER=appuser \
-    FLYWAY_PASSWORD=123456 \
-    FLYWAY_LOCATIONS=filesystem:/opt/flyway/sql/
-
+COPY -R ./* ./flyway
 # Expose the default Oracle Database port
 EXPOSE 1521
 
