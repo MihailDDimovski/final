@@ -79,4 +79,4 @@ jobs:
       with:
           playbook: playbook.yml
           directory: ./ansible
-          options: --vault-pass-file /home/misho/pass_vault -i inventory.ini -b -e "ansible_become_password=${{ secrets.PASS }}"
+          options: -vvv --vault-pass-file /home/misho/pass_vault -i inventory.ini -b -e "ansible_become_password=${{ secrets.PASS }}"
