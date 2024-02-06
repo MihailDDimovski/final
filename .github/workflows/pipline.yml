@@ -71,8 +71,8 @@ jobs:
     needs: [Build-Push-Container-app, Build-Push-Container-oracle, security-snyk]
     runs-on: self-hosted
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+#    - name: Checkout
+#      uses: actions/checkout@v4
       
     - name: Run Ansible Playbook
       uses: dawidd6/action-ansible-playbook@v2
