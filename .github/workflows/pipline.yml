@@ -71,6 +71,13 @@ jobs:
     needs: [Build-Push-Container-app, Build-Push-Container-oracle, security-snyk]
     runs-on: self-hosted
     steps:
+    -
+      name: STOP CONTAINERS IF ANY ARE RUNNING
+      run: docker ps -aq | % { docker stop $_ }
+    -
+      name: REMOVE LEFTOVER CONTAINERS
+      run: docker container prune -f
+      
     - name: Checkout
       uses: actions/checkout@v4
       with:
