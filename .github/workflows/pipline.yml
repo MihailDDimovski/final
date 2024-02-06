@@ -73,7 +73,7 @@ jobs:
     steps:
     -
       name: STOP CONTAINERS IF ANY ARE RUNNING
-      run: docker ps -aq | xargs docker stop
+      run: if [ "$(docker ps -q)" ]; then docker stop $(docker ps -q); fi
     -
       name: REMOVE LEFTOVER CONTAINERS
       run: docker container prune -f
