@@ -63,7 +63,7 @@
         name: "{{ muy }}/app:{{ muy }}"
         source: pull
         
-- name: Start Oracle APP
+    - name: Start Oracle APP
       docker_container:
         name: "oracle-app"
         image: "{{ muy }}/app:{{ muy }}"
