@@ -62,17 +62,17 @@
       community.docker.docker_image:
         name: "{{ muy }}/app:{{ muy }}"
         source: pull
-    
-- name: Start Flask app container
-  docker_container:
-    name: "oracle-app"
-    image: "{{ muy }}/app:{{ muy }}"
-    hostname: oracleapp
-    detach: yes
-    ports:
-      - "5000:5000"
-    env:
-      PYTHON_USERNAME: "{{ appuser }}"
-      PYTHON_PASSWORD: "{{ appuserpass }}"
-      PYTHON_CONNECTSTRING: "{{ appuser }}/{{ appuserpass }}@192.168.1.2:1521/xepdb1"
-    network_mode: "network"
+        
+- name: Start Oracle APP
+      docker_container:
+        name: "oracle-app"
+        image: "{{ muy }}/app:{{ muy }}"
+        detach: yes
+        hostname: "oraclapp"
+        ports:
+          - "5000:5000"
+        env:
+          PYTHON_USERNAME: "{{ appuser }}"
+          PYTHON_PASSWORD: "{{ appuserpass }}"
+          PYTHON_CONNECTSTRING: "{{ appuser }}/{{ appuserpass }}@192.168.1.2:1521/xepdb1"
+        network_mode: "network"    
