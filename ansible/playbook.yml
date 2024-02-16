@@ -71,7 +71,7 @@
     detach: yes
     ports:
       - "5000:5000"
-    environment:
+    env:
       PYTHON_USERNAME: "{{ appuser }}"
       PYTHON_PASSWORD: "{{ appuserpass }}"
       PYTHON_CONNECTSTRING: "{{ appuser }}/{{ appuserpass }}@192.168.1.2:1521/xepdb1"
