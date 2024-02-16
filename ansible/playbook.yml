@@ -43,7 +43,6 @@
           - "1521:1521"
           - "5500:5500"
         env:
-          ORACLE_PWD: "{{ oracledbpass }}"
           ORACLE_CHARACTERSET: "AL32UTF8"
         volumes:
           - "./oracle"
