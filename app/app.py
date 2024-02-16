@@ -41,7 +41,6 @@ elif sys.platform.startswith("win32"):
 #
 # Doc link: https://cx-oracle.readthedocs.io/en/latest/user_guide/connection_handling.html#connection-pooling
 
-
 # init_session(): a 'session callback' to efficiently set any initial state
 # that each connection should have.
 #
@@ -182,4 +181,3 @@ if __name__ == '__main__':
 
     # Start a webserver
     app.run(port=int(os.environ.get('PORT', '5000')))
-</int:id></string:username>
