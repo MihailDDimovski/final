@@ -44,6 +44,7 @@
           - "5500:5500"
         env:
           ORACLE_CHARACTERSET: "AL32UTF8"
+          ORACLE_PWD: "{{ oracledbpass }}"
         volumes:
           - "./oracle"
           - "/home/misho/actions-runner/_work/final/final/oracle_flyway/oracle_setup:/opt/oracle/scripts/startup"
