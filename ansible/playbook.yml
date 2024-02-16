@@ -57,21 +57,22 @@
         host: "localhost"
         port: "1521"
         state: started
-
-    - name: RUN script to Oracle
-      command: "docker exec -i oracledb sqlplus / as sysdba < /home/misho/vboxshare/create_user.sql"
     
     - name: Pull Oracle app
       community.docker.docker_image:
         name: "{{ muy }}/app:{{ muy }}"
         source: pull
     
-    - name: Start Flask app container
-      community.general.docker_container:
-        name: "oracle-app"
-        image: "{{ muy }}/app:{{ muy }}"
-        hostname: oracleapp
-        detach: yes
-        ports:
-          - "5020:5020"
-        network_mode: "network"
+- name: Start Flask app container
+  community.general.docker_container:
+    name: "oracle-app"
+    image: "{{ muy }}/oraclelinux8-instantclient:21"  # Adjust the image name accordingly
+    hostname: oracleapp
+    detach: yes
+    ports:
+      - "5000:5000"
+    environment:
+      PYTHON_USERNAME: "{{ appuser }}"
+      PYTHON_PASSWORD: "{{ appuserpass }}"
+      PYTHON_CONNECTSTRING: "{{ appuser }}/{{ appuserpass }}@192.168.1.2:1521/xepdb1"
+    network_mode: "network"
