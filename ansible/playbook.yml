@@ -64,9 +64,9 @@
         source: pull
     
 - name: Start Flask app container
-  community.general.docker_container:
+  docker_container:
     name: "oracle-app"
-    image: "{{ muy }}/oraclelinux8-instantclient:21"  # Adjust the image name accordingly
+    image: "{{ muy }}/app:{{ muy }}"
     hostname: oracleapp
     detach: yes
     ports:
