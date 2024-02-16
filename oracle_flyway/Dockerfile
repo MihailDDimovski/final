@@ -10,6 +10,9 @@ RUN mkdir /flyway
 # Set the working directory
 WORKDIR ./oracle-flyway
 
+# Copy the sqlnet.ora file
+COPY sqlnet.ora /opt/oracle/product/21c/dbhomeXE/network/admin/
+
 # Download and install Flyway
 RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && \
     ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
