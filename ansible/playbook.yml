@@ -87,5 +87,5 @@
         network_mode: "network"
     - name: Run Fwayway
       command: >
-        docker exec oracle-app sh -c "flyway -configFiles=/flyway2/conf/flyway.conf"
+        docker exec oracle-app sh -c "flyway -configFiles=/app/flyway.conf"
           
