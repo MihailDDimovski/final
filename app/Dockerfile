@@ -8,6 +8,7 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME/lib
 # Install Oracle Instant Client and necessary dependencies
 RUN apt-get update && apt-get install -y libaio1 && \
     apt-get install -y curl && \
+    apt-get install -y wget \ 
     mkdir -p /opt/oracle && \
     cd /opt/oracle && \
     curl -o oracle-instantclient.rpm https://yum.oracle.com/repo/OracleLinux/OL8/oracle/instantclient21/x86_64/getPackage/oracle-instantclient-basic-21.5.0.0.0-1.x86_64.rpm && \
@@ -21,7 +22,8 @@ RUN apt-get update && apt-get install -y libaio1 && \
     apt-get purge -y alien && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* \
+    mkdir fwyway
 
 # Set up Oracle Instant Client libraries
 RUN echo "$ORACLE_HOME/lib" > /etc/ld.so.conf.d/oracle-instantclient.conf && ldconfig
@@ -36,8 +38,29 @@ COPY . /app
 # Set the working directory
 WORKDIR /app
 
+# Copy Flyway configuration files into the container
+COPY ./oracle_flyway /flyway
+
 # Expose the Flask port
 EXPOSE 5000
 
-# Command to run the Flask application
-CMD ["python", "app.py"]
+# Set up Flyway and run the Flask application
+RUN echo "\
+#!/bin/sh\n\
+\n\
+# Set environment variables and copy Flyway configuration files\n\
+docker exec oracledb sh -c \"export FLYWAY_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1 && \\\n\
+                                    export FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12 && \\\n\
+                                    export FLYWAY_LOCATIONS=filesystem:/flyway/sql/ && \\\n\
+                                    cp -R ./oracle_flyway/* /flyway\"\n\
+\n\
+# Set working directory and download Flyway\n\
+docker exec oracledb sh -c \"cd /flyway && wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin\"\n\
+\n\
+# Run the Flask application\n\
+python app.py\n\
+" > /usr/local/bin/start.sh \
+&& chmod +x /usr/local/bin/start.sh
+
+# Set the entrypoint to run the script
+ENTRYPOINT ["/usr/local/bin/start.sh"]
