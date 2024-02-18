@@ -57,7 +57,10 @@
         host: localhost
         port: 1521
         state: started
-
+    - name: Install wget and make dir for Flyway
+      command: >
+         docker exec oracledb sh -c "mkdir /flyway && yum install wget"
+  
     - name: Run SQL script against the database
       command: >
         docker exec oracledb sh -c "sqlplus / as sysdba @/opt/oracle/scripts/startup/create_user.sql"
