@@ -35,7 +35,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'docker.io/mihaildanailovdimovski/app:${{ secrets.DOCKERHUB_USERNAME }}'
-          format: 'sarif'
+          format: 'table'
           exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
@@ -69,20 +69,13 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: 'docker.io/mihaildanailovdimovski/oracle_flyway:${{ secrets.DOCKERHUB_USERNAME }}'
-          format: 'sarif'
+          format: 'table'
           exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           output: 'trivy-results.sarif'
     
-      -
-        name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
 
  Truffle-HOG-Secret-Scan:
     runs-on: ubuntu-latest
