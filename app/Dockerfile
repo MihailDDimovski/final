@@ -51,6 +51,13 @@ ENV PYTHON_CONNECTSTRING=192.168.1.2/XEPDB1
 RUN cd /flyway && \
     wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && \
     ln -s /flyway/flyway-7.15.0/flyway /usr/local/bin/flyway
+# Set the working directory
+WORKDIR /oracle_flyway
+
+RUN mkdir flyway2
+
+# Copy the application code into the container
+COPY . /flyway2
 
 # Expose the Flask port
 EXPOSE 5000
