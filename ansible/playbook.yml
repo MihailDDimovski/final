@@ -46,7 +46,7 @@
           ORACLE_CHARACTERSET: "AL32UTF8"
           ORACLE_PWD: "{{ oracledbpass }}"
         volumes:
-          - "./oracle:/opt/oracle/oradata"
+          - "/opt/:/opt/oracle/oradata"
           - "/home/misho/actions-runner/_work/final/final/oracle_flyway/oracle_setup:/opt/oracle/scripts/startup"
         network_mode: "network"
 
