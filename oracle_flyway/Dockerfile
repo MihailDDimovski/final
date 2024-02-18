@@ -2,29 +2,29 @@
 FROM container-registry.oracle.com/database/express:21.3.0-xe
 
 # Install wget
-USER root
-RUN yum install -y wget
+#USER root
+#RUN yum install -y wget
 
-RUN mkdir /flyway
+#RUN mkdir /flyway
 
 # Set the working directory
-WORKDIR ./oracle-flyway
+#WORKDIR ./oracle-flyway
 
 # Copy the sqlnet.ora file
-COPY sqlnet.ora /opt/oracle/product/21c/dbhomeXE/network/admin/
+#COPY sqlnet.ora /opt/oracle/product/21c/dbhomeXE/network/admin/
 
 # Download and install Flyway
-RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && \
-    ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
+#RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && \
+ #   ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
     
-ENV FLYWAY_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1 \
-    FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12 \
-    FLYWAY_USER=appuser \
-    FLYWAY_PASSWORD=123456 \
-    FLYWAY_LOCATIONS=filesystem:/flyway/sql/
+#ENV FLYWAY_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1 \
+ #   FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12 \
+  #  FLYWAY_USER=appuser \
+   # FLYWAY_PASSWORD=123456 \
+    #FLYWAY_LOCATIONS=filesystem:/flyway/sql/
 
 # Copy Flyway configuration files into the container
-COPY  ./ ./flyway
+#COPY  ./ ./flyway
 # Expose the default Oracle Database port
 EXPOSE 1521
 
