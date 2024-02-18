@@ -85,4 +85,7 @@
           PYTHON_USERNAME: "{{ appuser }}"
           PYTHON_PASSWORD: "{{ appuserpass }}"
         network_mode: "network"
+     - name: Run Fwayway
+      command: >
+        docker exec oracledb sh -c "flyway migrate"
           
