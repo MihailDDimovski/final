@@ -30,26 +30,30 @@ RUN echo "$ORACLE_HOME/lib" > /etc/ld.so.conf.d/oracle-instantclient.conf && ldc
 RUN pip install --upgrade pip && \
     pip install flask cx_Oracle
 
+# Copy the application code into the container
+COPY . /app
+
 # Set the working directory
 WORKDIR /app
 
-# Copy the application code into the container
-COPY . /app
+# Set environment variables for Flyway
+ENV FLYWAY_URL=jdbc:oracle:thin:@//192.168.1.2:1521/XEPDB1
+ENV FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12
+ENV FLYWAY_USER=appuser
+ENV FLYWAY_PASSWORD=123456
+ENV FLYWAY_LOCATIONS=filesystem:/flyway/sql/
+
+# Set environment variables for Python app
+ENV PYTHON_USERNAME=appuser
+ENV PYTHON_PASSWORD=123456
+ENV PYTHON_CONNECTSTRING=192.168.1.2:1521/XEPDB1
+# Download and install Flyway
+RUN cd /flyway && \
+    wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && \
+    ln -s /flyway/flyway-7.15.0/flyway /usr/local/bin/flyway
 
 # Expose the Flask port
 EXPOSE 5000
 
-# Set up Flyway and run the Flask application
-CMD ["sh", "-c", "\
-    # Set environment variables and copy Flyway configuration files\n\
-    docker exec oracledb sh -c \"export FLYWAY_URL=jdbc:oracle:thin:@//192.168.1.2:1521/XEPDB1 && \\\n\
-                                        export FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12 && \\\n\
-                                        export FLYWAY_LOCATIONS=filesystem:/flyway/sql/ && \\\n\
-                                        export FLYWAY_USER=appuser' && \\\n\
-                                        export FLYWAY_PASSWORD=123456 && \\\n\
-                                        cp -R ./oracle_flyway/* /flyway\"\n\
-    # Set working directory and download Flyway\n\
-    docker exec oracledb sh -c \"cd /flyway && wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin\"\n\
-    # Run the Flask application\n\
-    python app.py"\
-]
+# Run the Flask application
+CMD ["python", "app.py"]
