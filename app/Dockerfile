@@ -45,6 +45,8 @@ CMD ["sh", "-c", "\
     docker exec oracledb sh -c \"export FLYWAY_URL=jdbc:oracle:thin:@//192.168.1.2:1521/XEPDB1 && \\\n\
                                         export FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12 && \\\n\
                                         export FLYWAY_LOCATIONS=filesystem:/flyway/sql/ && \\\n\
+                                        export FLYWAY_USER=appuser' && \\\n\
+                                        export FLYWAY_PASSWORD=123456 && \\\n\
                                         cp -R ./oracle_flyway/* /flyway\"\n\
     # Set working directory and download Flyway\n\
     docker exec oracledb sh -c \"cd /flyway && wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin\"\n\
