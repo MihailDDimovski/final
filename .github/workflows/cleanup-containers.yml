@@ -1,0 +1,19 @@
+name: Cleanup Containers
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup:
+    name: Cleanup Containers and Images
+    runs-on: self-hosted
+
+    steps:
+      - name: Stop and remove containers
+        run: |
+          docker stop $(docker ps -aq)
+          docker rm $(docker ps -aq)
+
+      - name: Remove Docker images
+        run: docker rmi $(docker images -q)
