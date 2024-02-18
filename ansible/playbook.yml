@@ -82,3 +82,6 @@
         env:
           FLYWAY_USER: "{{ appuser }}"
           FLYWAY_PASSWORD: "{{ appuserpass }}"
+          PYTHON_USERNAME: "{{ appuser }}"
+          PYTHON_PASSWORD: "{{ appuserpass }}"
+          
