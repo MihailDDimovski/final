@@ -1,45 +1,40 @@
-CI/CD Pipeline for Oracle Database and Flask App
-Overview
-This GitHub Actions workflow automates the deployment process for an Oracle Database and a Flask app. The workflow consists of three jobs:
+Project Overview and Setup Guide
+This repository contains Ansible playbooks, Docker configurations, GitHub Actions workflows, and security tools integration for managing a Dockerized Flyway migration tool with an Oracle Database. Below is an overview of the setup and components involved in the project.
 
-Build-Push-Container:
+Components
+Ansible Playbooks: Used to automate the deployment and configuration of the Dockerized Flyway with an Oracle Database.
 
-Builds and pushes the Flask app container to Docker Hub.
-security:
+Docker Configuration: Dockerfiles and Docker Compose files for building and running the Docker containers required for Flyway and Oracle Database.
 
-Runs Snyk to check for vulnerabilities in the code.
-ansible:
+GitHub Actions Workflows: CI/CD workflows to automate the build, push, and deployment process of Docker images, along with security scanning using Trivy and Snyk.
 
-Runs an Ansible playbook using a self-hosted runner to set up an Oracle Database, execute SQL scripts, and deploy a Flask app container.
-Workflow Steps
-Build-Push-Container Job:
-Build and Push Flask App Container:
-The job checks out the code, logs in to Docker Hub, sets up Docker Buildx, and builds/pushes the Flask app container to Docker Hub. Docker Hub credentials are securely stored in GitHub Secrets.
-Security Job:
-Run Snyk for Vulnerability Scanning:
-The job checks out the code and runs Snyk to identify and report vulnerabilities. The Snyk token is securely stored in GitHub Secrets.
-Ansible Job:
-Run Ansible Playbook:
-The job runs an Ansible playbook using a self-hosted runner.
-The Ansible playbook performs the following tasks:
-Starts an Oracle Database container using a pushed image.
-Waits for the Oracle Database container to be ready.
-Copies an SQL script to the Oracle Database container.
-Executes the SQL script on the Oracle Database.
-Pulls another Docker image from Docker Hub.
-Tags the pulled image.
-Starts a Flask app container using the tagged image.
-Configuration
-GitHub Secrets:
-Make sure to set up the following secrets in the GitHub repository:
+Security Tools Integration: Integration of Trivy for vulnerability scanning of Docker images and TruffleHog for scanning code for secrets.
 
-DOCKERHUB_USERNAME: Your Docker Hub username.
-DOCKER_PASSWORD: Your Docker Hub password.
-SNYK_TOKEN: Your Snyk API token for vulnerability scanning.
-PASS: Ansible vault password.
-PIPEDREAM_ENDPOINT: Pipedream webhook endpoint for Docker Hub pushes.
-Ansible Vault Password File:
-Ensure that the Ansible vault password is securely stored at /home/misho/pass_vault and referenced in the Ansible playbook.
+Ansible Playbooks
+The Ansible playbook flyway_deploy.yml automates the deployment of Flyway with an Oracle Database. It performs tasks like setting up a Docker network, pulling Docker images, starting containers, and running Flyway migration.
 
-Execution
-The workflow is triggered automatically on pushes to the master branch and closed pull requests. Additionally, you can manually trigger the workflow using the GitHub Actions UI.
+Usage
+bash
+Copy code
+ansible-playbook flyway_deploy.yml
+Docker Configuration
+The Dockerfile and docker-compose.yml files in the app and oracle_flyway directories define the Docker configurations for building and running Flyway and Oracle Database containers.
+
+GitHub Actions Workflows
+The .github/workflows directory contains GitHub Actions workflows for CI/CD and security scanning.
+
+Build-Push-Container-app: Workflow for building and pushing the Flyway application Docker image to Docker Hub. It also includes Trivy vulnerability scanning.
+
+Build-Push-Container-oracle: Workflow for building and pushing the Oracle Database Docker image to Docker Hub. It also includes Trivy vulnerability scanning.
+
+Truffle-HOG-Secret-Scan: Workflow for scanning the codebase for secrets using TruffleHog.
+
+security-snyk: Workflow for checking vulnerabilities using Snyk and generating SARIF reports.
+
+ansible: Workflow for deploying the Flyway application and Oracle Database using Ansible. It includes steps to stop and remove any existing Docker containers.
+
+Contributing
+Contributions to this project are welcome! Feel free to submit pull requests or open issues for any improvements, bug fixes, or new features.
+
+License
+This project is licensed under the MIT License.
