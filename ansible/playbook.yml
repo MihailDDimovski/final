@@ -57,7 +57,48 @@
         host: "localhost"
         port: "1521"
         state: started
-    
+        
+    - name: Run SQL script against the database
+      community.general.docker_container_exec:
+        name: oracledb
+        command: |
+          sqlplus / as sysdba @/opt/oracle/scripts/startup/create_user.sql
+      environment:
+        ORACLE_SID: XE
+        ORACLE_HOME: /opt/oracle/product/21c/dbhomeXE
+        LD_LIBRARY_PATH: /opt/oracle/product/21c/dbhomeXE/lib
+
+    - name: Install wget and create directory
+      community.general.docker_container_exec:
+        name: oracledb
+        command: yum install -y wget && mkdir /flyway
+
+    - name: Set working directory and download Flyway
+      community.general.docker_container_exec:
+        name: oracledb
+        command: wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
+      environment:
+        WORKDIR: /oracle-flyway
+
+    - name: Set environment variables
+      community.general.docker_container_exec:
+        name: oracledb
+        command: |
+          export FLYWAY_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1
+          export FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12
+          export FLYWAY_USER="{{ appuser }}"
+          export FLYWAY_PASSWORD="{{ appuserpass }}"
+          export FLYWAY_LOCATIONS=filesystem:/flyway/sql/
+      environment:
+        WORKDIR: /oracle-flyway
+
+    - name: Copy Flyway configuration files
+      community.general.docker_container_copy:
+        src: ./oracle_flyway
+        dest: /flyway
+        container: oracledb
+        mode: 0644
+        
     - name: Pull Oracle app
       community.docker.docker_image:
         name: "{{ muy }}/app:{{ muy }}"
