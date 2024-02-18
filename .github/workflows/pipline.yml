@@ -5,7 +5,7 @@ on:
       - 'master'
   pull_request:
     types: [closed]
-jo:
+jobs:
 
  Build-Push-Container-app:
     runs-on: ubuntu-latest
@@ -30,6 +30,17 @@ jo:
           file: ./app/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/app:${{ secrets.DOCKERHUB_USERNAME }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/mihaildanailovdimovski/app:${{ secrets.DOCKERHUB_USERNAME }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output: 'trivy-results.sarif'
           
  Build-Push-Container-oracle:
     runs-on: ubuntu-latest
@@ -54,7 +65,37 @@ jo:
           file: ./oracle_flyway/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/oracle_flyway:${{ secrets.DOCKERHUB_USERNAME }}
-      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'docker.io/mihaildanailovdimovski/oracle_flyway:${{ secrets.DOCKERHUB_USERNAME }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output: 'trivy-results.sarif'
+    
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+
+ Truffle-HOG-Secret-Scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Secret Scanning
+      uses: trufflesecurity/trufflehog@main
+      with:
+        extra_args: --only-verified
+
  security-snyk:
     runs-on: ubuntu-latest
     steps:
@@ -66,10 +107,8 @@ jo:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --sarif-file-output=snyk.sarif
-
-
  ansible:
-    needs: [Build-Push-Container-app, Build-Push-Container-oracle, security-snyk]
+    needs: [Build-Push-Container-app, Build-Push-Container-oracle, security-snyk, Truffle-HOG-Secret-Scan]
     runs-on: self-hosted
     steps:
     -
