@@ -58,8 +58,7 @@
         port: 1521
         state: started
     - name: Install wget and make dir for Flyway
-      command: >
-         docker exec oracledb sh -c "mkdir /flyway && yum install wget"
+      command: docker exec oracledb sh -c "mkdir /flyway && yum install -y wget"
   
     - name: Run SQL script against the database
       command: >
