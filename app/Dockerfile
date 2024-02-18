@@ -32,14 +32,11 @@ RUN echo "$ORACLE_HOME/lib" > /etc/ld.so.conf.d/oracle-instantclient.conf && ldc
 RUN pip install --upgrade pip && \
     pip install flask cx_Oracle
 
-# Copy the application code into the container
-COPY . /app
-
 # Set the working directory
 WORKDIR /app
 
-# Copy Flyway configuration files into the container
-COPY ../oracle_flyway /flyway
+# Copy the application code into the container
+COPY . /app
 
 # Expose the Flask port
 EXPOSE 5000
@@ -49,7 +46,7 @@ RUN echo "\
 #!/bin/sh\n\
 \n\
 # Set environment variables and copy Flyway configuration files\n\
-docker exec oracledb sh -c \"export FLYWAY_URL=jdbc:oracle:thin:@//localhost:1521/XEPDB1 && \\\n\
+docker exec oracledb sh -c \"export FLYWAY_URL=jdbc:oracle:thin:@//192.168.1.2:1521/XEPDB1 && \\\n\
                                     export FLYWAY_ORACLE_WALLET_LOCATION=/flyway/ewallet.p12 && \\\n\
                                     export FLYWAY_LOCATIONS=filesystem:/flyway/sql/ && \\\n\
                                     cp -R ./oracle_flyway/* /flyway\"\n\
