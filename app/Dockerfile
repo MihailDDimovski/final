@@ -46,7 +46,7 @@ ENV FLYWAY_LOCATIONS=filesystem:/flyway/sql/
 # Set environment variables for Python app
 ENV PYTHON_USERNAME=appuser
 ENV PYTHON_PASSWORD=123456
-ENV PYTHON_CONNECTSTRING=192.168.1.2:1521/XEPDB1
+ENV PYTHON_CONNECTSTRING=192.168.1.2/XEPDB1
 # Download and install Flyway
 RUN cd /flyway && \
     wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && \
