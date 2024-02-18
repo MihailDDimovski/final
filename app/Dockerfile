@@ -39,7 +39,7 @@ COPY . /app
 WORKDIR /app
 
 # Copy Flyway configuration files into the container
-COPY ./oracle_flyway /flyway
+COPY ../oracle_flyway /flyway
 
 # Expose the Flask port
 EXPOSE 5000
