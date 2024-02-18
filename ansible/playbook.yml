@@ -84,4 +84,5 @@
           FLYWAY_PASSWORD: "{{ appuserpass }}"
           PYTHON_USERNAME: "{{ appuser }}"
           PYTHON_PASSWORD: "{{ appuserpass }}"
+        network_mode: "network"
           
