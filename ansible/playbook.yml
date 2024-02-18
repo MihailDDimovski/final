@@ -68,15 +68,11 @@
         ORACLE_HOME: /opt/oracle/product/21c/dbhomeXE
         LD_LIBRARY_PATH: /opt/oracle/product/21c/dbhomeXE/lib
 
-    - name: Install wget and create directory
-      docker_container:
-        name: oracledb
-        command: yum install -y wget && mkdir /flyway
-
     - name: Set working directory and download Flyway
       docker_container:
         name: oracledb
-        command: wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin
+        command: "sh -c 'cd /flyway && wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.15.0/flyway-commandline-7.15.0-linux-x64.tar.gz | tar -xvz && ln -s `pwd`/flyway-7.15.0/flyway /usr/local/bin'"
+    env:usr/local/bin
       environment:
         WORKDIR: /oracle-flyway
 
